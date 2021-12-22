@@ -4,6 +4,16 @@ import { AddressInfo } from 'net';
 import application from './app';
 import logger from './utils/logger';
 
+import dotenv from 'dotenv';
+
+let result = dotenv.config();
+if (result.error) {
+  result = dotenv.config({ path: '.env' });
+  if (result.error) {
+    throw result.error
+  }
+}
+console.info(result.parsed)
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(application.instance);
@@ -23,7 +33,6 @@ function serverListening(): void {
 
 server.on('error', serverError);
 server.on('listening', serverListening);
-
 
 server.listen(PORT, () => {
   console.log(`Server is listening on :${PORT}`);

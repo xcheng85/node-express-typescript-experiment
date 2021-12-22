@@ -1,6 +1,5 @@
 import express, { Application, Handler } from 'express';
 import cors from 'cors';
-import * as http from 'http';
 import helmet from 'helmet';
 
 import swaggerUi from 'swagger-ui-express';
@@ -12,8 +11,9 @@ import * as swaggerDocument from './swagger.json'
 import { controllers } from './controllers';
 import { MetadataKeys, RouteDefinition } from './models/decorators';
 
-import addErrorHandler from './error-handler';
+import customErrorHandler from './middlewares/custom-error-handler';
 
+import "./env"
 
 export class App {
   private readonly _instance: Application;
@@ -28,7 +28,7 @@ export class App {
 
     this.configureMiddlewares();
     this.registerRouters();
-
+    this._instance.use(customErrorHandler);
 
     const redis = new Redis({
       port: 6379,
@@ -63,7 +63,7 @@ export class App {
     //   res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,Authorization");
     //   next();
     // });
-    this._instance.use(addErrorHandler);
+
   }
 
   private registerRouters() {

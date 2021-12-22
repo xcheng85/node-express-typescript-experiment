@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import Controller from '../decorators/controller';
 import { Get, Post } from '../decorators/handler';
 import { routeLogging, logIndex } from '../decorators/logging';
+import HttpError from '../utils/error';
 
 @logIndex
 @Controller('/players')
 export default class PlayerController {
-  private cats: Array<{ name: string }> = [
+  private players: Array<{ name: string }> = [
     { name: 'Roger Federer' },
     { name: 'Rafael Nadal' },
   ];
@@ -14,13 +16,14 @@ export default class PlayerController {
   @routeLogging()
   @Get('')
   public index(req: Request, res: Response): void {
-    res.json({ cats: this.cats });
+    throw new HttpError('fff', StatusCodes.BAD_REQUEST);
+    res.json({ players: this.players });
   }
 
   @routeLogging()
   @Post('')
   public add(req: Request, res: Response): void {
-    this.cats.push(req.body);
+    this.players.push(req.body);
     res.status(204).json();
   }
 
@@ -28,9 +31,9 @@ export default class PlayerController {
   @Get('/:name')
   public findByName(req: Request, res: Response): unknown {
     const { name } = req.params;
-    const foundCat = this.cats.find((c) => c.name === name);
-    if (foundCat) {
-      return res.json({ cat: foundCat });
+    const foundPlayer = this.players.find((c) => c.name === name);
+    if (foundPlayer) {
+      return res.json({ player: foundPlayer });
     }
     return res.status(404).json({ message: 'Player not found!' });
   }
